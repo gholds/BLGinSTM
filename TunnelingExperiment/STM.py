@@ -988,22 +988,20 @@ class BLGinSTM:
         """
 
         dIdV = np.gradient(self.I,axis=0) # dI/dV
+        DdIdV=np.zeros_like(dIdV) # correction for inelastic effects
 
         if inelastic==True:
-            DdIdV = np.empty_like(dIdV)
-
             gaussian_prefactor = self.BLG.lambda1 / (self.BLG.sigma1*np.sqrt(2*pi))
             gaussian = lambda x: gaussian_prefactor*np.exp( -(np.abs(x)-self.BLG.energy1)**2 / (2*self.BLG.sigma1)**2 )
 
             for i in range(np.shape(dIdV)[1]):
-                # Compute the whole integrand
-                
-                # Compute partial sums
+                for j in range(np.shape(dIdV)[0]):
+                    x = np.linspace(0,self.VT[j],num=j)
+                    integrand = np.flip(dIdV[0:j,i])*gaussian(x)
+                    DdIdV[j,i]=np.sum(integrand)
 
-                pass
-
-            pass
-
+        dIdV = dIdV + DdIdV
+        
         if norm == True:
             IV = self.I / self.VT[:,np.newaxis] # I/V
             dIdV = dIdV / IV
