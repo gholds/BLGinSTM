@@ -993,12 +993,12 @@ class BLGinSTM:
         if inelastic==True:
             gaussian_prefactor = self.BLG.lambda1 / (self.BLG.sigma1*np.sqrt(2*pi))
             gaussian = lambda x: gaussian_prefactor*np.exp( -(np.abs(x)-self.BLG.energy1)**2 / (2*self.BLG.sigma1)**2 )
-
+            dx = self.VT[1]-self.VT[0]
             for i in range(np.shape(dIdV)[1]):
                 for j in range(np.shape(dIdV)[0]):
                     x = np.linspace(0,self.VT[j],num=j)
                     integrand = np.flip(dIdV[0:j,i])*gaussian(x)
-                    DdIdV[j,i]=np.sum(integrand)
+                    DdIdV[j,i]=np.abs(np.sum(integrand*dx))
 
         dIdV = dIdV + DdIdV
         
